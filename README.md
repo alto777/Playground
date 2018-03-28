@@ -1,7 +1,7 @@
 # VCV Playground
 
-My growing plugin full of stuff mined from the Rack body of work.
+My growing plugin full of stuff mined from the Rack body of work. This goes with v0.5 of Rack, I have it working on v0.6 too and when I can figure out how I'll upload that here.
 
-It started as Template and is now many cycles through edit/make/(quit)/make run as I made step-wise changes usually not breaking anything too badly.
+It started as Template and is now many cycles through edit/make/(quit)/make run as I made step-wise changes usually not breaking anything too badly. For me it is nice to see what and all is needed to do a particular thing w/ Rack.
 
-Mostly I just saw stuff I wanted to be able to use and hunted them down using 'find' and 'grep', my best Unix friends.
+Mostly I just saw stuff I wanted to be able to use that I hunted down using 'find' and 'grep', my best Unix friends.
