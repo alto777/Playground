@@ -1,4 +1,6 @@
 #include "Playground.hpp"
+
+/* I think I needed this when I introduced a Schmitt Trigger object */
 #include "dsp/digital.hpp" 
 
 struct MyModule : Module {
@@ -24,7 +26,10 @@ struct MyModule : Module {
 		SLIDEPOT_PARAM,
 		STEP12_PARAM,
 		MYKNOB_PARAM,
-				
+
+/* IDEA - tiny knob atopa big knob */
+		VER_KNOB_PARAM,
+
 		NUM_PARAMS
 	};
 	enum InputIds {
@@ -63,7 +68,7 @@ struct MyModule : Module {
 
 /* hello world global */
 	int hwCounter;
-	int step12 = 0;
+	float rotaryEncoderValue = 0;
 
 	float phase = 0.0;
 	float blinkPhase = 0.0;
@@ -86,11 +91,13 @@ void MyModule::step() {
 	float pitch = params[PITCH_PARAM].value;
 	pitch += params[STEP12_PARAM].value / 12.0;
 	pitch += params[SLIDEPOT_PARAM].value / 12.0;
+	pitch += params[VER_KNOB_PARAM].value / 12.0;
+	
+	rotaryEncoderValue = params[MYKNOB_PARAM].value;
 	
 	pitch += inputs[PITCH_INPUT].value;
-	pitch += inputs[PITCH_INPUT].value;
 
-	pitch = clampf(pitch, -4.0, 4.0);
+	pitch = clamp(pitch, -4.0, 4.0);
 	// The default pitch is C4
 	float freq = 261.626 * powf(2.0, pitch);
 	
@@ -147,8 +154,8 @@ void MyModule::step() {
 /* two-way toggle */
 	lights[TOG3_LAMP].value = params[TOG3_PARAM].value / 2.0;
 	
-	step12 = round(params[STEP12_PARAM].value);
-
+	
+//	MyModuleDisplay->display->box.pos = Vec(80, 280);
 }
 
 
@@ -163,9 +170,11 @@ struct GiantLED : BASE {
 struct myOwnKnob : SVGKnob {
 	myOwnKnob() {
 		box.size = Vec(40, 40);
-		minAngle = -0.75*M_PI;
-		maxAngle = 0.75*M_PI;
+		minAngle = -2.0*M_PI;
+		maxAngle = 2.0*M_PI;
 		setSVG(SVG::load(assetPlugin(plugin, "res/myOwnKnob.svg")));
+//
+		shadow->opacity = -1.0;
 	}
 };
 
@@ -187,79 +196,93 @@ struct MyModuleDisplay : TransparentWidget {
 		
 		nvgFillColor(vg, nvgRGBA(0x22, 0x11, 0x88, 0x80));
 		char text[128];
-		snprintf(text, sizeof(text), "Hello World! %d", module->hwCounter + module->step12);
-		nvgText(vg, 10, 10, text, NULL);
+		snprintf(text, sizeof(text), "ROT! %f", module->rotaryEncoderValue);
+		nvgText(vg, 5, 5, text, NULL);
+		nvgText(vg, 25, 25, text, NULL);
+		nvgText(vg, 25, 125, text, NULL);
 	}
 };
 /* ...hello world */
 
-MyModuleWidget::MyModuleWidget() {
-	MyModule *module = new MyModule();
-	setModule(module);
-	box.size = Vec(18 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
-
-	{
-		SVGPanel *panel = new SVGPanel();
-		panel->box.size = box.size;
-		panel->setBackground(SVG::load(assetPlugin(plugin, "res/MyModule.svg")));
-		addChild(panel);
+struct my2Switch : SVGSwitch, ToggleSwitch {
+	my2Switch() {
+		addFrame(SVG::load(assetPlugin(plugin, "res/my2Switch_0.svg")));
+		addFrame(SVG::load(assetPlugin(plugin, "res/my2Switch_1.svg")));
 	}
+};
+
+struct MyModuleWidget : ModuleWidget {
+	MyModuleWidget(MyModule *module) : ModuleWidget(module) {
+		setPanel(SVG::load(assetPlugin(plugin, "res/MyModule.svg")));
+
 
 /* hello world... */	
 	{
 		MyModuleDisplay *display = new MyModuleDisplay();
 		display->module = module;
-		display->box.pos = Vec(80, 280);
-		display->box.size = Vec(box.size.x, 140);
+		display->box.pos = Vec(25, 25);
+//		display->box.size = Vec(box.size.x, 140);
+		display->box.size = Vec(140, 140);
 		addChild(display);
 	}
 /* ...hello world */
 
 
 /* slide switch 2 position parameter */
-	addParam(createParam<CKSS>(Vec(100, 100), module, MyModule::SS2_PARAM, 0.0, 1.0, 1.0));
+	addParam(ParamWidget::create<my2Switch>(Vec(100, 100), module, MyModule::SS2_PARAM, 0.0, 1.0, 1.0));
 
 /* slide switch 2 position indicator LEDs */
-	addChild(createLight<MediumLight<GreenLight>>(Vec(102, 85), module, MyModule::SS2_LAMPS));
-	addChild(createLight<MediumLight<RedLight>>(Vec(102, 130), module, MyModule::SS2_LAMPS + 1));
+	addChild(ModuleLightWidget::create<MediumLight<GreenLight>>(Vec(102, 85), module, MyModule::SS2_LAMPS));
+	addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(102, 130), module, MyModule::SS2_LAMPS + 1));
 
 /* slide switch 3 position parameter */
-	addParam(createParam<CKSSThree>(Vec(150, 100), module, MyModule::SS3_PARAM, 0.0f, 2.0f, 0.0f));
+	addParam(ParamWidget::create<CKSSThree>(Vec(150, 100), module, MyModule::SS3_PARAM, 0.0f, 2.0f, 0.0f));
 /* and a lamp it controls the brightness of */
-	addChild(createLight<LargeLight<BlueLight>>(Vec(149, 80), module, MyModule::SS3_LAMP));
+	addChild(ModuleLightWidget::create<LargeLight<BlueLight>>(Vec(149, 80), module, MyModule::SS3_LAMP));
 
 // two state toggle switch
-	addParam(createParam<NKK>(Vec(150, 200), module, MyModule::TOG2_PARAM, 0.0, 1.0, 1.0));
+	addParam(ParamWidget::create<NKK>(Vec(150, 200), module, MyModule::TOG2_PARAM, 0.0, 1.0, 1.0));
 /* and a lamp it controls */
-	addChild(createLight<LargeLight<GreenLight>>(Vec(157, 180), module, MyModule::TOG2_LAMP));
+	addChild(ModuleLightWidget::create<LargeLight<GreenLight>>(Vec(157, 180), module, MyModule::TOG2_LAMP));
 
 // three state toggle switch
-	addParam(createParam<NKK>(Vec(185, 200), module, MyModule::TOG3_PARAM, 0.0, 2.0, 1.0));
+	addParam(ParamWidget::create<NKK>(Vec(185, 200), module, MyModule::TOG3_PARAM, 0.0, 2.0, 1.0));
 /* and a lamp it controls the brightness of */
 //	addChild(createLight<LargeLight<RedLight>>(Vec(192, 180), module, MyModule::TOG3_LAMP));
-		addChild(createLight<GiantLED<BlueLight>>(Vec(187, 160), module, MyModule::TOG3_LAMP));
+		addChild(ModuleLightWidget::create<GiantLED<BlueLight>>(Vec(187, 160), module, MyModule::TOG3_LAMP));
 
-/* illuminatable pushbutton */
+/* illuminatable pushbutton
 	addParam(createParam<LEDButton>(Vec(100, 200 + 125), module, MyModule::LED_BUTTON_PARAM, 0.0, 1.0, 0.0));
 	addChild(createLight<MediumLight<GreenLight>>(Vec(104, 204 + 125), module, MyModule::LED_BUTTON_LAMP));
-	
-	addParam(createParam<BefacoSlidePot>(Vec(12, 116), module, MyModule::SLIDEPOT_PARAM, 0.0, 1.0, 0.0));
-	addParam(createParam<BefacoBigSnapKnob>(Vec(75, 150), module, MyModule::STEP12_PARAM, 0.0, 12.0, 0.0));
+ */	
 
-	addParam(createParam<myOwnKnob>(Vec(200, 50), module, MyModule::MYKNOB_PARAM, 0.0, 12.0, 0.0));
+	addParam(ParamWidget::create<BefacoSlidePot>(Vec(12, 116), module, MyModule::SLIDEPOT_PARAM, 0.0, 1.0, 0.0));
+
+	addParam(ParamWidget::create<BefacoBigSnapKnob>(Vec(75, 150), module, MyModule::STEP12_PARAM, 0.0, 12.0, 0.0));
+	addParam(ParamWidget::create<myOwnKnob>(Vec(75 + 17.5, 150 + 17.5), module, MyModule::VER_KNOB_PARAM, -0.5, 0.5, 0.0));
+
+/* 25<-75 get rid of top lampSwitch */
+	addParam(ParamWidget::create<LEDButton>(Vec(25 + 28.5, 150 + 28.5), module, MyModule::LED_BUTTON_PARAM, 0.0, 1.0, 0.0));
+	addChild(ModuleLightWidget::create<MediumLight<GreenLight>>(Vec(25 + 28.5 + 4, 150 + 28.5 + 4), module, MyModule::LED_BUTTON_LAMP));
 
 
-	addChild(createScrew<ScrewSilver>(Vec(0, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(box.size.x - RACK_GRID_WIDTH, 0)));
-	addChild(createScrew<ScrewSilver>(Vec(0, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-	addChild(createScrew<ScrewBlack>(Vec(box.size.x - RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addParam(ParamWidget::create<myOwnKnob>(Vec(200, 50), module, MyModule::MYKNOB_PARAM, -INFINITY, +INFINITY, 0.0));
 
 
-	addParam(createParam<Davies1900hBlackKnob>(Vec(28, 87), module, MyModule::PITCH_PARAM, -3.0, 3.0, 0.0));
+	addChild(Widget::create<ScrewSilver>(Vec(0, 0)));
+	addChild(Widget::create<ScrewSilver>(Vec(box.size.x - RACK_GRID_WIDTH, 0)));
+	addChild(Widget::create<ScrewSilver>(Vec(0, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+	addChild(Widget::create<ScrewBlack>(Vec(box.size.x - RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-	addInput(createInput<PJ301MPort>(Vec(33, 186), module, MyModule::PITCH_INPUT));
 
-	addOutput(createOutput<PJ301MPort>(Vec(33, 275), module, MyModule::SINE_OUTPUT));
+	addParam(ParamWidget::create<Davies1900hBlackKnob>(Vec(28, 87), module, MyModule::PITCH_PARAM, -3.0, 3.0, 0.0));
 
-	addChild(createLight<MediumLight<RedLight>>(Vec(41, 59), module, MyModule::BLINK_LIGHT));
+	addInput(Port::create<PJ301MPort>(Vec(33, 186), Port::INPUT, module, MyModule::PITCH_INPUT));
+
+	addOutput(Port::create<PJ301MPort>(Vec(33, 275), Port::OUTPUT, module, MyModule::SINE_OUTPUT));
+
+	addChild(ModuleLightWidget::create<MediumLight<RedLight>>(Vec(41, 59), module, MyModule::BLINK_LIGHT));
 }
+};
+
+Model *modelMyModule = Model::create<MyModule, MyModuleWidget>("Playground", "MyModule", "My Module", OSCILLATOR_TAG);
