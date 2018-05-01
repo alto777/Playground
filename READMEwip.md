@@ -79,21 +79,29 @@ In the process of figuring out how to make the three LFSR module, I had to do qu
 
 ## DIVADA
 ### Self explanatory…
-I kept looking at clock dividers and it seemed like it could be easier. So I tried. That may mean this divider is deficient in some way not apparent to my ears. I am exploring the use of prime numbers in generative patches, hence the odd stepped choices of division ratio. There is no normalizing, but nothing would keep a person from feeding an out th another in for mutiple divisions.
+I kept looking at clock dividers and it seemed like it could be easier. So I tried. That may mean this divider is deficient in some way not apparent to my ears. I am exploring the use of prime numbers in generative patches, hence the odd stepped choices of division ratio. There is no normalizing, but nothing would keep a person from feeding an out to another in for mutiple divisions.
 
 ## a7UTILS
 ### Manual clock and voltage control, clock edge detector and inverter.
-In working up my own modules and playing with others, I kept needing a simple push button level/trigger, a source of constant and hand-adjustable CVs, and inverted clock signals and indications of rising and falling edges. These can all be done w/o "yet another" module, of course, but I wanted these and only these functions along with knowing exactly what was happening exactly. These three are very simple code once you get a space cleared As usual, it all starts with Template and reverse engineering real programmer's code. 
+In working up my own modules and playing with others, I kept needing a simple push button level/trigger, a source of constant and hand-adjustable CVs, and inverted clock signals and indications of rising and falling edges. These can all be done w/o "yet another" module, of course, but I wanted these and only these functions along with knowing exactly what was happening. These three are very simple code once you get a space cleared. As usual, it all starts with Template and reverse engineering real programmer's code. 
 
 ## CHEAPFX
 ### Toy sound effects controller
-I overheard a guy in a bar say "An astonishing variety of sound effects can be generated from a simple model: switch between two audio frequency square waves with a low frequency square wave or positve- or negative-going 
+I overheard a guy in a bar say "An astonishing variety of sound effects can be generated from a simple model: switch between two audio frequency square waves with a low frequency square wave or positive- or negative-going 
 sawtooth."  
    
 True that! After messing around with the two audio frequencies and the switching waveform and rate I had to make this module, which helps by: Fade-switching to eliminate clicks, syncrhonizing the low-frequency control waveform to a start trigger and holding the effect until the finish of the low-frequency waveform.  
-If you want it continuously, just wire up the trigger to a constant. Otherwise, re-trigger during a cycle will give you another cycle. Plug the output into a VCO. The FREQUENCY knob and CV control the switch rate. The SHAPE knob and CV control the TRIANGLE  output, moving from +sawtooth to triangle to -sawtooth. Also the RECTANGLE wave ouput duty cycle. Plug either to the VCO FM input to control the depth. You'll hear lotsa things from ambulances to telephone ringers. Experiment!
+ 
+If you want it continuously, just wire up the trigger to a constant. Otherwise, re-triggering during a cycle will give you another cycle. The FREQUENCY knob and CV control the switch rate. The SHAPE knob and CV control the TRIANGLE  output, moving from +sawtooth to triangle to -sawtooth. Also the RECTANGLE wave ouput duty cycle. Plug either output to a VCO FM input to control the depth. You'll hear lotsa things from ambulances to phasers to telephone ringers. Experiment!
 
 ## YASeq-3
-Okay, I know. But it is a right (or would that be rite) of passage. After Template, SEQ-3 from the Fundamental group of modules is a wealth of how-to information. Once you get this, it is hard not to make one's own. I've changed to pots to sliders for a graphic effect, and I added a sort of built in quantizer for chromatic and diatonic scale output. In INF mode, it's basically the SEQ-3 sequencer, but I added a scale switch to tame the range of the sliders. I highly recommend that you make a SEQ-3 variant of your own that does just what you want if no one else's does! I hacked a few things here and I reiterate that it may not be the best way to see how things are done - I am totally faking it here and proceeding mostly by pattern matching and eliminating compile-time errors one by one until I get something flying. you will do better.
+Okay, I know. But it is a right (or would that be rite) of passage. After Template, SEQ-3 from the Fundamental group of modules is a wealth of how-to information. Once you get this, it is hard not to make one's own. I've changed to pots to sliders for a graphic effect, and I added a sort of built in quantizer for chromatic and diatonic scale output. In INF mode, it's basically the SEQ-3 sequencer, but I added a scale switch to tame the range of the sliders. I highly recommend that you make a SEQ-3 variant of your own that does just what you want if no one else's does! I hacked a few things here and I reiterate that it may not be the best way to see how things are done - I am totally faking it here and proceeding mostly by pattern matching and eliminating compile-time errors one by one until I get something flying. you will do better.  
+
+**You are welcome and thanks in advance:**  
+
+If you get anywhere with these modules and find errors or missing features I would be very happy to hear how I might fix or improve this modest offering.  
+
+**alto777**
+
 
 
