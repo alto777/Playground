@@ -1,6 +1,8 @@
 #include "Playground.hpp"
 #include "dsp/digital.hpp" 
 
+/* just git along, can't we? */
+
 struct MyModule : Module {
 	enum ParamIds {
 		PITCH_PARAM,

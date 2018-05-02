@@ -5,3 +5,5 @@ My growing plugin full of stuff mined from the Rack body of work. This goes with
 It started as Template and is now many cycles through edit/make/(quit)/make run as I made step-wise changes usually not breaking anything too badly. For me it is nice to see what and all is needed to do a particular thing w/ Rack.
 
 Mostly I just saw stuff I wanted to be able to use that I hunted down using 'find' and 'grep', my best Unix friends.
+
+## Now trying to make it 0.6.0 compatible.
