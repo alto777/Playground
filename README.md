@@ -7,3 +7,5 @@ It started as Template and is now many cycles through edit/make/(quit)/make run 
 Mostly I just saw stuff I wanted to be able to use that I hunted down using 'find' and 'grep', my best Unix friends.
 
 ## Now trying to make it 0.6.0 compatible.
+
+Part of this is learning a bit more git. Hang on.
