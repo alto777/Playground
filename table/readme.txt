@@ -1,0 +1,1 @@
+utility hacksmyEuclid.cpp - compute and print a table of E(k, n)euclidByTable.cpp - use that computed table to… print the table, which should then be identical
