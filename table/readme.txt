@@ -1,1 +1,1 @@
-utility hacksmyEuclid.cpp - compute and print a table of E(k, n)euclidByTable.cpp - use that computed table to… print the table, which should then be identical
+utility hacksmyEuclid.cpp - compute and print a table of E(k, n)euclidByTable.cpp - use that computed table to… print the table, which should then be identicalbucketEuclidean.c is from a Python implementation. Here as a table maker as well as making the necessary arrays for QuadEuclideanRhythms
