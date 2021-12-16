@@ -8,4 +8,4 @@ Mostly I just saw stuff I wanted to be able to use that I hunted down using 'fin
 
 ## Now trying to make it 0.6.0 compatible.
 
-Part of this is learning a bit more git. Hang on. Here I am years later.
+A not small part of this is learning a bit more git. Hang on. Here I am years later.
